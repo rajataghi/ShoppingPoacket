@@ -2,7 +2,7 @@
 
 class API {
 //connect to db
-$memcache = new Memcache() ; //using library php_memcache.dll
+$memcache = new Memcache() ;
 
 mysql_connect('localhost','root','') or die("cannot connect");
 
@@ -19,6 +19,31 @@ if(function_exists($_GET['method']))
   else
      echo "function not found" ;
 }	 
+
+public function get_request_method(){  //returns the type of request made
+	
+	return $_SERVER['REQUEST_METHOD'];
+	
+	}
+		
+		
+private function cleanInputs($data){              //this method is used to extract information about a particular product(used in deletion below)
+			$clean_input = array();               
+			if(is_array($data)){
+				foreach($data as $k => $v){
+					$clean_input[$k] = $this->cleanInputs($v);
+				}
+			}else{
+				if(get_magic_quotes_gpc()){
+					$data = trim(stripslashes($data));                      // Found it on stackoverflow, as I did not know how to do this part.
+				}
+				$data = strip_tags($data);
+				$clean_input = trim($data);
+			}
+			return $clean_input;
+		}				
+		
+		
 //methods
 	private function login() {
 
@@ -28,7 +53,7 @@ $user_details=array() ;
 
  //basic validation
  if(!empty($email) and !empty($password)) {
-
+    
     $sql= "SELECT * from members WHERE email='$email' and pass='$password'"; //members table contains info for all authenticated members
    
    if(mysql_num_rows($sql) > 0)                        
@@ -47,28 +72,42 @@ else
 
 private function getallproducts()
 {
-$key=md5("select * from products") //for memcache
-$products=array() ;
-$cache_result = array();
-$cache_result = $memcache->get($key);
-if($cache_result)                // check if query is already present in cache
-{
-$products=$cache_result ;
-}
-else {
-$q=mysql_query("select * from products");  //products table contains all product related information(mentioned in the design doc.)
+  if($this->get_request_method() != "GET"){         //confirm whether the request method is get otherwise no data is retrieved
+				echo "incorrect request method" ;
+			}
+  else {			
+        $key=md5("select * from products")         //for memcache
+		$q=mysql_query("select * from products");  //products table contains all product related information(mentioned in the design doc.)
 
+		$products=array() ;
 
-
- while($p=mysql_fetch_array($q,MYSQL_ASSOC))
-   { 
-     $products[]=$p ;
+		while($p=mysql_fetch_array($q,MYSQL_ASSOC))
+			{	 
+				$products[]=$p ;
    
-   }
+			}
   
-  $products=json_encode($products); //list of all products in json format
- $memcache->set($key,$products,TRUE,500) ;  //cache the result for 500 seconds
-    }
+  $products=json_encode($products);                       //list of all products in json format
+  $memcache->set($key,$products,TRUE,500) ;              //cache the result for 500 seconds
+        }
+ }
+ 
+ private function deleteproduct(){
+			                                               // confirm the type of request
+			if($this->get_request_method() != "DELETE"){
+				echo "incorrect request method" ;
+			}
+			else {
+			
+			$del=$this->cleanInputs($_GET);
+			$id = (int)$this->$del['id'];               //get the product id to be deleted.
+			if($id > 0) {
+			mysql_query("DELETE from products where id = $id") ;
+			echo "record successfully deleted" ;
+			}
+			else
+			  echo "no record with this id" ;
+			}
  }
 
 }

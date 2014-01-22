@@ -6,3 +6,7 @@ The product_api file contains the API class which handles all the calls to the A
 
 3. A function to retrieve information about all products in the database.
 I have also used memcache by using the library php_memcache.dll
+
+4. A function which returns the type of request made.
+
+5. Added a function to delete a product by comparing its "product id" with the database.
