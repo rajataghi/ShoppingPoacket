@@ -1,0 +1,8 @@
+The product_api file contains the API class which handles all the api calls.
+
+The class has the following functions:
+1. A function to check if the called method is present in the api class
+
+2. A login function to check for user authenticity with basic validation
+
+3. A function to retrieve a information about all products from the     database.
