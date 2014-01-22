@@ -48,9 +48,17 @@ else
 private function getallproducts()
 {
 $key=md5("select * from products") //for memcache
+$products=array() ;
+$cache_result = array();
+$cache_result = $memcache->get($key);
+if($cache_result)                // check if query is already present in cache
+{
+$products=$cache_result ;
+}
+else {
 $q=mysql_query("select * from products");  //products table contains all product related information(mentioned in the design doc.)
 
-$products=array() ;
+
 
  while($p=mysql_fetch_array($q,MYSQL_ASSOC))
    { 
@@ -60,7 +68,7 @@ $products=array() ;
   
   $products=json_encode($products); //list of all products in json format
  $memcache->set($key,$products,TRUE,500) ;  //cache the result for 500 seconds
-
+    }
  }
 
 }
