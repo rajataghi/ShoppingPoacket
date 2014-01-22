@@ -1,8 +1,8 @@
-The product_api file contains the API class which handles all the api calls.
+The product_api file contains the API class which handles all the calls to the API. The class contains the following functions :
 
-The class has the following functions:
-1. A function to check if the called method is present in the api class
+1. A function to check if the method called exists in the class.
 
-2. A login function to check for user authenticity with basic validation
+2. A login function to allow access only to authenticated users. This function has basic login validation.
 
-3. A function to retrieve a information about all products from the     database.
+3. A function to retrieve information about all products in the database.
+I have also used memcache by using the library php_memcache.dll

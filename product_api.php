@@ -2,6 +2,8 @@
 
 class API {
 //connect to db
+$memcache = new Memcache() ; //using library php_memcache.dll
+
 mysql_connect('localhost','root','') or die("cannot connect");
 
 mysql_select_db('thedroidpeople') or die("cannot select");
@@ -18,7 +20,7 @@ if(function_exists($_GET['method']))
      echo "function not found" ;
 }	 
 //methods
-private function login() {
+	private function login() {
 
 $email = $_POST['email'] ;
 $password = $_POST['password'] ;  //get login credentials of the user from the login form
@@ -45,7 +47,9 @@ else
 
 private function getallproducts()
 {
+$key=md5("select * from products") //for memcache
 $q=mysql_query("select * from products");  //products table contains all product related information(mentioned in the design doc.)
+
 $products=array() ;
 
  while($p=mysql_fetch_array($q,MYSQL_ASSOC))
@@ -55,8 +59,9 @@ $products=array() ;
    }
   
   $products=json_encode($products); //list of all products in json format
- 
-}
+ $memcache->set($key,$products,TRUE,500) ;  //cache the result for 500 seconds
+
+ }
 
 }
 
