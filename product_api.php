@@ -27,7 +27,7 @@ public function get_request_method(){  //returns the type of request made
 	}
 		
 		
-private function cleanInputs($data){              //this method is used to extract information about a particular product(used in deletion below)
+private function cleanInputs($data){              //this method is used to extract information about a particular product(used for search and deletion)
 			$clean_input = array();               
 			if(is_array($data)){
 				foreach($data as $k => $v){
@@ -94,23 +94,47 @@ private function getallproducts()
  
  private function deleteproduct(){
 			                                               // confirm the type of request
-			if($this->get_request_method() != "DELETE"){
+	if($this->get_request_method() != "DELETE"){
 				echo "incorrect request method" ;
 			}
-			else {
+	else {
 			
-			$del=$this->cleanInputs($_GET);
-			$id = (int)$this->$del['id'];               //get the product id to be deleted.
-			if($id > 0) {
-			mysql_query("DELETE from products where id = $id") ;
-			echo "record successfully deleted" ;
-			}
-			else
+		$del=$this->cleanInputs($_GET);
+		$id = (int)$this->$del['id'];               //get the id of the product to be deleted.
+		if($id > 0) {
+		
+		mysql_query("DELETE from products where id = $id") ;  //compare with id field in the database
+		echo "record successfully deleted" ;
+		
+		}
+		
+		else
 			  echo "no record with this id" ;
-			}
+		}
  }
+ 
+ private function getproduct(){                         //retrieve info about a single product
+	if($this->get_request_method() != "GET"){         
+				echo "incorrect request method" ;
+			}
+    else {
+	
+		$del=$this->cleanInputs($_GET);
+	    $id = (int)$this->$del['id'];               //get the id of product to be found.
+        if($id > 0) {
+			$search_query=mysql_query("SELECT * from products where id = $id") ;	
+			
+			$search_result = mysql_fetch_array($search_query,MYSQL_ASSOC);
+  
+            $search_result=json_encode($search_result) ; 	
+		}
+		else 
+			echo "no product with this id" ;
+	} 
+ }
+ 
 
-}
+ }
 
 
 $api = new API;        //initialize the API class
