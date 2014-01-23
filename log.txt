@@ -12,3 +12,5 @@ I have also used memcache by using the library php_memcache.dll
 5. Added a function to delete a product by comparing its "product id" with the database.
 
 6. Added a function to search a product by it's id and retrieve information about the product.
+
+7. A function to add new products to the database. The function is to be called when the form about the new product is submitted.

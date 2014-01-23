@@ -60,7 +60,8 @@ $user_details=array() ;
       { $user_details = mysql_fetch_array($sql,MYSQL_ASSOC);
   
         $user_details=json_encode($user_details) ;       //user details in json format
-        return $user_details ;
+		return $user_details ;
+      
 	  }
 	else
 		echo "invalid email address or password" ;
@@ -88,7 +89,7 @@ private function getallproducts()
 			}
   
   $products=json_encode($products);                       //list of all products in json format
-  $memcache->set($key,$products,TRUE,500) ;  //cache the result for 500 seconds
+  $memcache->set($key,$products,TRUE,500) ;              //cache the result for 500 seconds
   return $products ;
         }
  }
@@ -120,7 +121,7 @@ private function getallproducts()
 			}
     else {
 	
-		$del=$this->cleanInputs($_GET);
+		$del = $this->cleanInputs($_GET);
 	    $id = (int)$this->$del['id'];               //get the id of product to be found.
         if($id > 0) {
 			$search_query=mysql_query("SELECT * from products where id = $id") ;	
@@ -128,11 +129,28 @@ private function getallproducts()
 			$search_result = mysql_fetch_array($search_query,MYSQL_ASSOC);
   
             $search_result=json_encode($search_result) ;
-			return $search_result ;
+			return $search_result ;                         //return product info in json format
 		}
 		else 
 			echo "no product with this id" ;
 	} 
+ }
+ 
+ private function addproduct(){                        //function to add a new product to the database         
+                                                       /* name,info,barcode,tags are "form" fields which give info about the product to be added
+                                                          function to be called when form is submitted
+													   */
+	$Name = json_decode($_POST['name']);												   
+	$Info = json_decode($_POST['info']);
+    $Barcode = json_decode($_POST['barcode']);
+	$Tags = json_decode($_POST['tags']);
+    	
+    $insert_query = "INSERT into products(id,name,info,barcode,tags) 
+	                     values('','$Name','$Info','$Barcode','$Tags')";
+    $execute_query = mysql_query($insert_query);
+	
+	echo "Record successfully inserted" ;
+ 
  }
  
 
