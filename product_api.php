@@ -60,7 +60,7 @@ $user_details=array() ;
       { $user_details = mysql_fetch_array($sql,MYSQL_ASSOC);
   
         $user_details=json_encode($user_details) ;       //user details in json format
-      
+        return $user_details ;
 	  }
 	else
 		echo "invalid email address or password" ;
@@ -88,7 +88,8 @@ private function getallproducts()
 			}
   
   $products=json_encode($products);                       //list of all products in json format
-  $memcache->set($key,$products,TRUE,500) ;              //cache the result for 500 seconds
+  $memcache->set($key,$products,TRUE,500) ;  //cache the result for 500 seconds
+  return $products ;
         }
  }
  
@@ -126,7 +127,8 @@ private function getallproducts()
 			
 			$search_result = mysql_fetch_array($search_query,MYSQL_ASSOC);
   
-            $search_result=json_encode($search_result) ; 	
+            $search_result=json_encode($search_result) ;
+			return $search_result ;
 		}
 		else 
 			echo "no product with this id" ;
