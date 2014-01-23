@@ -2,7 +2,7 @@
 
 class API {
 //connect to db
-$memcache = new Memcache() ;
+$memcache = new Memcache() ;                
 
 mysql_connect('localhost','root','') or die("cannot connect");
 
@@ -45,19 +45,19 @@ private function cleanInputs($data){              //this method is used to extra
 		
 		
 //methods
-	private function login() {
+private function login() {
 
-$email = $_POST['email'] ;
-$password = $_POST['password'] ;  //get login credentials of the user from the login form
-$user_details=array() ;
+ $email = $_POST['email'] ;
+ $password = $_POST['password'] ;  //get login credentials of the user from the login form
+ $user_details=array() ;
 
  //basic validation
  if(!empty($email) and !empty($password)) {
     
-    $sql= "SELECT * from members WHERE email='$email' and pass='$password'"; //members table contains info for all authenticated members
+    $sql= "SELECT * from members WHERE email='$email' and pass='$password'" ; //members table contains info for all authenticated members
    
-   if(mysql_num_rows($sql) > 0)                        
-      { $user_details = mysql_fetch_array($sql,MYSQL_ASSOC);
+   if(mysql_num_rows($sql) > 0) {                       
+        $user_details = mysql_fetch_array($sql,MYSQL_ASSOC);
   
         $user_details=json_encode($user_details) ;       //user details in json format
 		return $user_details ;
@@ -71,11 +71,13 @@ else
 }
 
 
-private function getallproducts()
-{
+private function getallproducts(){
+
   if($this->get_request_method() != "GET"){         //confirm whether the request method is get otherwise no data is retrieved
-				echo "incorrect request method" ;
-			}
+		
+		echo "incorrect request method" ;
+			
+	}
   else {			
         $key=md5("select * from products")         //for memcache
 		$q=mysql_query("select * from products");  //products table contains all product related information(mentioned in the design doc.)
@@ -91,7 +93,8 @@ private function getallproducts()
   $products=json_encode($products);                       //list of all products in json format
   $memcache->set($key,$products,TRUE,500) ;              //cache the result for 500 seconds
   return $products ;
-        }
+        
+		}
  }
  
  private function deleteproduct(){
